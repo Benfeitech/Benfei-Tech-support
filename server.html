@@ -4,8 +4,8 @@ import fetch from "node-fetch";
 const app = express();
 app.use(express.json());
 
-const BOT_TOKEN = "8377540652:AAFDfsA6yTyz10La6SCF_odlxFmh60L4g7M";
-const CHAT_ID = "7264885250";
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const CHAT_ID = process.env.CHAT_ID;
 
 app.post("/send", async (req, res) => {
   const { name, whatsapp, message } = req.body;
