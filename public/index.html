@@ -68,11 +68,12 @@
         message: this.message.value
       };
 
-      let res = await fetch("https://benfei-tech-support-1.onrender.com/send", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(formData)
-      });
+      let res = await fetch("/send", {
+  method: "POST",
+  headers: {"Content-Type": "application/json"},
+  body: JSON.stringify(formData)
+});
+
 
       if(res.ok){
         document.getElementById("response").innerText = "✅ Message sent successfully!";
