@@ -22,7 +22,7 @@
             background-color: var(--background-color);
             color: var(--text-color);
             display: flex;
-            flex-direction: column; /* Changed to column to stack elements vertically */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -39,7 +39,7 @@
             width: 100%;
             max-width: 600px;
             text-align: center;
-            margin-bottom: auto; /* Pushes the container to the top and leaves space for footer */
+            margin-bottom: auto;
         }
 
         h1 {
@@ -47,14 +47,14 @@
             margin-bottom: 10px;
             color: var(--primary-color);
             display: flex;
-            flex-direction: column; /* Changed to column to stack icon and text */
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 15px; /* Adds space between icon and text */
+            gap: 15px;
         }
 
         h1 i {
-            font-size: 3em; /* Larger icon size */
+            font-size: 3em;
             margin-right: 0;
             margin-bottom: 0;
         }
@@ -171,9 +171,8 @@
             color: var(--button-hover);
         }
         
-        /* Footer styles */
         .footer {
-            margin-top: auto; /* Pushes the footer to the bottom */
+            margin-top: auto;
             padding: 20px;
             text-align: center;
             color: #555;
@@ -210,6 +209,9 @@
     const urlInput = document.getElementById('urlInput');
     const downloadBtn = document.getElementById('downloadBtn');
     const statusDiv = document.getElementById('status');
+    
+    // API endpoint for your service
+    const YOUR_API_ENDPOINT = 'https://apis.davidcyriltech.my.id/download/ytmp3?url=';
 
     // Function to display status messages
     function showStatus(message, type = 'info', icon = '') {
@@ -230,56 +232,55 @@
         downloadBtn.disabled = true;
         showStatus('Processing your request...', 'info', 'fas fa-spinner spinner');
 
-        // *******************************************************************
-        // YOUR API INTEGRATION GOES HERE
-        // Replace the mock fetch with your actual API call
-        // *******************************************************************
-        const YOUR_API_ENDPOINT = 'https://apis.davidcyriltech.my.id/download/ytmp3?url='; // REPLACE WITH YOUR URL
-        const MOCK_MP3_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'; // Mock download URL
-
         try {
-            // This is a mock API call using fetch to demonstrate the flow.
-            // In a real scenario, you'd send the URL to your server-side API.
-            const response = await fetch(YOUR_API_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url: youtubeUrl }),
-            });
+            // Making the API call to your backend
+            const response = await fetch(YOUR_API_ENDPOINT + encodeURIComponent(youtubeUrl));
 
-            // Simulate a delay to mimic API processing time
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-            // Assuming your API returns a JSON object with a 'url' property for the MP3.
-            // const data = await response.json();
-            const data = { success: true, url: MOCK_MP3_URL }; // Mock data
+            // Parse the JSON response from your API
+            const data = await response.json();
 
-            if (data.success) {
+            // Check the 'success' property and make sure the 'result' and 'download_url' exist
+            if (data.success && data.result && data.result.download_url) {
+                // Get the URL and title from the API response
+                const downloadUrl = data.result.download_url;
+                const videoTitle = data.result.title;
+
+                // Create the download link element
                 const mp3Link = document.createElement('a');
-                mp3Link.href = data.url;
+                mp3Link.href = downloadUrl;
                 mp3Link.className = 'download-link';
                 mp3Link.innerHTML = '<i class="fas fa-download"></i> Click here to Download';
-                mp3Link.download = 'music.mp3'; // Suggests a filename
                 
-                statusDiv.innerHTML = ''; // Clear previous status
+                // Set the filename using the video title from the API
+                mp3Link.download = `${videoTitle}.mp3`;
+                
+                // Update the status message to show the link
+                statusDiv.innerHTML = '';
                 statusDiv.className = 'status-message active success';
                 statusDiv.appendChild(document.createTextNode('Download is ready! '));
                 statusDiv.appendChild(mp3Link);
 
             } else {
-                showStatus('Failed to download. Please check the URL.', 'error', 'fas fa-exclamation-circle');
+                // Handle cases where the API call was successful but the conversion failed
+                showStatus('Failed to download. Please check the URL or try again.', 'error', 'fas fa-exclamation-circle');
             }
 
         } catch (error) {
             console.error('API Error:', error);
+            // Display a generic error message to the user
             showStatus('An unexpected error occurred. Please try again.', 'error', 'fas fa-times-circle');
 
         } finally {
+            // Re-enable the button regardless of success or failure
             downloadBtn.disabled = false;
         }
     });
 </script>
 
 </body>
-</html>
+    </html>
+    
