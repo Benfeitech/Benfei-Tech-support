@@ -1,87 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Support Request</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f7fb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-    .form-box {
-      background: #fff;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 400px;
-    }
-    h2 {
-      text-align: center;
-      color: #333;
-    }
-    input, textarea, button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 15px;
-    }
-    button {
-      background: #0088cc;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover {
-      background: #006fa1;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube MP3 Downloader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ff0000;      /* YouTube red */
+            --background-color: #121212;   /* Dark gray */
+            --card-color: #1e1e1e;         /* Slightly lighter dark gray */
+            --text-color: #e0e0e0;         /* Light gray */
+            --input-border: #333;
+            --button-hover: #e60000;       /* Darker red */
+            --success-color: #28a745;      /* Green for success */
+            --error-color: #dc3545;        /* Red for error */
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column; /* Changed to column to stack elements vertically */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: var(--card-color);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: auto; /* Pushes the container to the top and leaves space for footer */
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            display: flex;
+            flex-direction: column; /* Changed to column to stack icon and text */
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* Adds space between icon and text */
+        }
+
+        h1 i {
+            font-size: 3em; /* Larger icon size */
+            margin-right: 0;
+            margin-bottom: 0;
+        }
+
+        p {
+            font-size: 1em;
+            color: #b0b0b0;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .form-group input {
+            width: 75%;
+            padding: 15px 15px 15px 50px;
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group .icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+            font-size: 1.2em;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        .status-message {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .status-message.active {
+            display: flex;
+        }
+
+        .status-message.info {
+            background-color: #34495e;
+            color: #ecf0f1;
+        }
+
+        .status-message.success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .status-message.error {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 1em;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .download-link:hover {
+            color: var(--button-hover);
+        }
+        
+        /* Footer styles */
+        .footer {
+            margin-top: auto; /* Pushes the footer to the bottom */
+            padding: 20px;
+            text-align: center;
+            color: #555;
+            font-size: 0.9em;
+        }
+    </style>
 </head>
 <body>
-  <div class="form-box">
-    <h2>Contact Benfei Tech Support</h2>
-    <form id="supportForm">
-      <input type="text" name="name" placeholder="Your Name" required>
-      <input type="tel" name="whatsapp" placeholder="WhatsApp Number e.g +234...">
-      <textarea name="message" rows="4" placeholder="Your Message..." required></textarea>
-      <button type="submit">Send</button>
+
+<div class="container">
+    <h1><i class="fab fa-youtube"></i>YouTube MP3 Downloader</h1>
+    <p>Paste a YouTube video URL below and download the audio as an MP3 file.</p>
+
+    <form id="downloaderForm">
+        <div class="form-group">
+            <i class="fas fa-link icon"></i>
+            <input type="url" id="urlInput" placeholder="Paste YouTube URL here..." required>
+        </div>
+        <button type="submit" id="downloadBtn">
+            <i class="fas fa-download"></i> Download MP3
+        </button>
+        <div class="footer">
+    <p>Powered by Benfei Tech</p>
+</div>
     </form>
-    <p id="response" style="text-align:center; color:green; font-size:14px;"></p>
-  </div>
 
-  <script>
-    document.getElementById("supportForm").addEventListener("submit", async function(e){
-      e.preventDefault();
-      
-      let formData = {
-        name: this.name.value,
-        whatsapp: this.whatsapp.value,
-        message: this.message.value
-      };
-
-      let res = await fetch("/send", {
-  method: "POST",
-  headers: {"Content-Type": "application/json"},
-  body: JSON.stringify(formData)
-});
+    <div id="status" class="status-message"></div>
+</div>
 
 
-      if(res.ok){
-        document.getElementById("response").innerText = "✅ Message sent successfully!";
-        this.reset();
-      } else {
-        document.getElementById("response").innerText = "❌ Error sending message!";
-      }
+
+<script>
+    const form = document.getElementById('downloaderForm');
+    const urlInput = document.getElementById('urlInput');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const statusDiv = document.getElementById('status');
+
+    // Function to display status messages
+    function showStatus(message, type = 'info', icon = '') {
+        statusDiv.innerHTML = `<i class="${icon}"></i> ${message}`;
+        statusDiv.className = `status-message active ${type}`;
+    }
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const youtubeUrl = urlInput.value;
+        if (!youtubeUrl) {
+            showStatus('Please enter a valid YouTube URL.', 'error', 'fas fa-exclamation-circle');
+            return;
+        }
+
+        // Disable button and show processing message
+        downloadBtn.disabled = true;
+        showStatus('Processing your request...', 'info', 'fas fa-spinner spinner');
+
+        // *******************************************************************
+        // YOUR API INTEGRATION GOES HERE
+        // Replace the mock fetch with your actual API call
+        // *******************************************************************
+        const YOUR_API_ENDPOINT = 'https://apis.davidcyriltech.my.id/download/ytmp3?url='; // REPLACE WITH YOUR URL
+        const MOCK_MP3_URL = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'; // Mock download URL
+
+        try {
+            // This is a mock API call using fetch to demonstrate the flow.
+            // In a real scenario, you'd send the URL to your server-side API.
+            const response = await fetch(YOUR_API_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: youtubeUrl }),
+            });
+
+            // Simulate a delay to mimic API processing time
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
+            // Assuming your API returns a JSON object with a 'url' property for the MP3.
+            // const data = await response.json();
+            const data = { success: true, url: MOCK_MP3_URL }; // Mock data
+
+            if (data.success) {
+                const mp3Link = document.createElement('a');
+                mp3Link.href = data.url;
+                mp3Link.className = 'download-link';
+                mp3Link.innerHTML = '<i class="fas fa-download"></i> Click here to Download';
+                mp3Link.download = 'music.mp3'; // Suggests a filename
+                
+                statusDiv.innerHTML = ''; // Clear previous status
+                statusDiv.className = 'status-message active success';
+                statusDiv.appendChild(document.createTextNode('Download is ready! '));
+                statusDiv.appendChild(mp3Link);
+
+            } else {
+                showStatus('Failed to download. Please check the URL.', 'error', 'fas fa-exclamation-circle');
+            }
+
+        } catch (error) {
+            console.error('API Error:', error);
+            showStatus('An unexpected error occurred. Please try again.', 'error', 'fas fa-times-circle');
+
+        } finally {
+            downloadBtn.disabled = false;
+        }
     });
-  </script>
+</script>
+
 </body>
-        </html>
+</html>
