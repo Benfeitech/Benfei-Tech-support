@@ -17,6 +17,11 @@
             --error-color: #dc3545;        /* Red for error */
             --whatsapp-green: #25D366;     /* WhatsApp green */
             --whatsapp-hover: #1DA851;     /* Darker WhatsApp green */
+
+            /* Battery colors */
+            --battery-full: #28a745;       /* Green */
+            --battery-half: #ffc107;       /* Yellow */
+            --battery-low: #dc3545;        /* Red */
         }
 
         body {
@@ -31,53 +36,75 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-            position: relative; /* Needed for absolute positioning of the WhatsApp button */
+            position: relative;
         }
-        
-        /* WhatsApp button container */
-        .whatsapp-channel-container {
+
+        /* --- Battery Widget Styling (unchanged) --- */
+        .battery-widget-container {
             position: absolute;
             top: 20px;
-            right: 20px;
-        }
-
-        .whatsapp-channel-btn {
-            display: inline-flex;
+            left: 20px;
+            display: flex;
             align-items: center;
+            gap: 10px;
+            background-color: var(--card-color);
             padding: 10px 15px;
-            background-color: #2caf35;
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 1em;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            animation: bounce 2s infinite; /* Apply the bounce animation */
+            border: 1px solid var(--input-border);
+            font-size: 1em;
+            color: var(--text-color);
+            z-index: 10;
+        }
+        
+        .battery-widget-container .icon-and-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .whatsapp-channel-btn:hover {
-            background-color: var(--whatsapp-hover);
+        .battery-widget-container .info-text {
+            display: flex;
+            flex-direction: column;
         }
 
-        .whatsapp-channel-btn i {
-            margin-right: 8px;
-            font-size: 1.2em;
+        .battery-icon {
+            font-size: 1.5em;
+        }
+        
+        .battery-full-color {
+            color: var(--battery-full);
+        }
+        
+        .battery-half-color {
+            color: var(--battery-half);
+        }
+        
+        .battery-low-color {
+            color: var(--battery-low);
         }
 
-        /* Keyframe animation for bouncing effect */
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-10px);
-            }
-            60% {
-                transform: translateY(-5px);
-            }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
+        .battery-low-pulse {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes fade {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .battery-charging-animation {
+            animation: fade 2s infinite ease-in-out;
+        }
+
+
+        /* --- Main Content Styling --- */
         .container {
             background-color: var(--card-color);
             padding: 40px;
@@ -101,7 +128,7 @@
         }
 
         h1 i {
-            font-size: 2.5em; /* Reduced icon size */
+            font-size: 2.5em;
             margin-right: 0;
             margin-bottom: 0;
         }
@@ -131,7 +158,7 @@
         .form-group input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 10px 2px rgba(255, 0, 0, 0.6); /* Input glow on focus */
+            box-shadow: 0 0 10px 2px rgba(255, 0, 0, 0.6);
         }
 
         .form-group .icon {
@@ -143,7 +170,8 @@
             font-size: 1.2em;
         }
 
-        button {
+        /* Styling for the Download Button */
+        .download-btn {
             width: 100%;
             padding: 15px;
             background-color: var(--primary-color);
@@ -156,15 +184,58 @@
             transition: background-color 0.3s ease;
         }
 
-        button:hover {
+        .download-btn:hover {
             background-color: var(--button-hover);
         }
 
-        button:disabled {
+        .download-btn:disabled {
             background-color: #555;
             cursor: not-allowed;
         }
 
+        /* Styling for the new WhatsApp Button */
+        .whatsapp-btn {
+            display: inline-flex;
+            width: 90%;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background-color: #15bf10;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-top: 20px;
+            animation: bounce 2s infinite; /* Bouncing animation added back */
+        }
+
+        .whatsapp-btn:hover {
+            background-color: var(--whatsapp-hover);
+        }
+
+        .whatsapp-btn i {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+        
+        /* Keyframe animation for bouncing effect */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        /* Other styling remains the same */
         .status-message {
             margin-top: 25px;
             padding: 15px;
@@ -218,7 +289,7 @@
         .download-link:hover {
             color: var(--button-hover);
         }
-        
+
         .footer {
             margin-top: 30px;
             padding: 2px;
@@ -230,11 +301,14 @@
 </head>
 <body>
 
-<div class="whatsapp-channel-container">
-    <a href="https://whatsapp.com/channel/0029Vay16NVJENy6op6dBV3B" class="whatsapp-channel-btn">
-        <i class="fab fa-whatsapp"></i>
-        Join WhatsApp Channel
-    </a>
+<div class="battery-widget-container">
+    <div class="icon-and-text">
+        <span class="battery-icon"></span>
+        <div class="info-text">
+            <span id="battery-level-text"></span>
+            <span id="battery-status-text"></span>
+        </div>
+    </div>
 </div>
 
 <div class="container">
@@ -246,17 +320,20 @@
             <i class="fas fa-link icon"></i>
             <input type="url" id="urlInput" placeholder="Paste YouTube URL here..." required>
         </div>
-        <button type="submit" id="downloadBtn">
+        <button type="submit" id="downloadBtn" class="download-btn">
             <i class="fas fa-download"></i> Download MP3
         </button>
         <div id="status" class="status-message"></div>
-
-        <div class="footer">
+    </form>
+    
+    <a href="https://whatsapp.com/channel/0029Vay16NVJENy6op6dBV3B" class="whatsapp-btn">
+        <i class="fab fa-whatsapp"></i>
+        Join WhatsApp Channel
+    </a>
+    <div class="footer">
     <p>Powered by Benfei Tech</p>
 </div>
-    </form></div>
-
-    
+</div>
 
 
 
@@ -265,7 +342,7 @@
     const urlInput = document.getElementById('urlInput');
     const downloadBtn = document.getElementById('downloadBtn');
     const statusDiv = document.getElementById('status');
-    
+
     // API endpoint for your service
     const YOUR_API_ENDPOINT = 'https://apis.davidcyriltech.my.id/download/ytmp3?url=';
 
@@ -337,5 +414,66 @@
     });
 </script>
 
+<script>
+    const batteryIcon = document.querySelector('.battery-icon');
+    const batteryLevelText = document.getElementById('battery-level-text');
+    const batteryStatusText = document.getElementById('battery-status-text');
+    const batteryWidgetContainer = document.querySelector('.battery-widget-container');
+
+    function updateBatteryInfo(battery) {
+        const level = Math.round(battery.level * 100);
+        const charging = battery.charging;
+
+        let iconClass = '';
+        let colorClass = '';
+        let animationClass = '';
+        
+        // Determine icon and color based on battery level
+        if (level > 50) {
+            iconClass = 'fas fa-battery-full';
+            colorClass = 'battery-full-color';
+        } else if (level > 20) {
+            iconClass = 'fas fa-battery-half';
+            colorClass = 'battery-half-color';
+        } else {
+            iconClass = 'fas fa-battery-empty';
+            colorClass = 'battery-low-color';
+            animationClass = 'battery-low-pulse';
+        }
+
+        // Add a charging icon and animation if the device is plugged in
+        if (charging) {
+            iconClass = 'fas fa-bolt';
+            animationClass = 'battery-charging-animation';
+            colorClass = 'battery-full-color';
+        }
+
+        // Update the icon and text
+        batteryIcon.className = `battery-icon ${iconClass} ${colorClass} ${animationClass}`;
+        batteryLevelText.textContent = `Battery: ${level}%`;
+        batteryStatusText.textContent = `Status: ${charging ? 'Charging' : 'Not Charging'}`;
+    }
+
+    // Check for API support and initialize the battery widget
+    if ('getBattery' in navigator) {
+        navigator.getBattery().then(battery => {
+            updateBatteryInfo(battery);
+
+            battery.addEventListener('levelchange', () => {
+                updateBatteryInfo(battery);
+            });
+
+            battery.addEventListener('chargingchange', () => {
+                updateBatteryInfo(battery);
+            });
+        });
+    } else {
+        // Hide the widget if the API is not supported
+        batteryWidgetContainer.style.display = 'none';
+        console.log('Battery Status API not supported.');
+    }
+</script>
+
 </body>
-</html>
+        </html>
+    
